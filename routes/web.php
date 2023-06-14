@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ExcelController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -16,3 +17,12 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
+
+Route::middleware('auth.basic')->group(function (){
+    Route::get('/upload-excel', function () {
+        return view('upload-excel');
+    });
+    Route::post('/upload-excel', [ExcelController::class, 'upload'])->name('excel.upload');
+    Route::get('/rows', [ExcelController::class, 'showRows']);
+});
+

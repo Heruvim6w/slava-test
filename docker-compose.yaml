@@ -1,0 +1,44 @@
+version: "3"
+services:
+  slava:
+    container_name: slava
+    restart: always
+    build: ./docker/php
+    volumes:
+      - ./xhprof:/php/xhprof/data
+      - ./:/var/www/html/slava
+    environment:
+      - VIRTUAL_HOST=slava.local
+      - VIRTUAL_PROTO=fastcgi
+      - VIRTUAL_PORT=9000
+      - VIRTUAL_ROOT=/var/www/html/slava/public
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    working_dir: /var/www/html/slava
+    ports:
+      - "3030:3029"
+      - "3031:3032"
+    extra_hosts:
+      - "slava.local:172.17.0.1"
+    networks:
+      - devserver_default
+    depends_on:
+      - redis
+  redis:
+    image: redis:alpine
+    container_name: redis
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis:/data
+    command: redis-server --appendonly yes
+    networks:
+      - devserver_default
+
+volumes:
+  nginx:
+  redis:
+networks:
+  devserver_default:
+    external: true
